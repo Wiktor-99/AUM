@@ -2,3 +2,4 @@ ml_project
 raw-img
 .ipynb_checkpoints
 *.pkl
+.vscode
