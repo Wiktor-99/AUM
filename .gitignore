@@ -3,3 +3,4 @@ raw-img
 .ipynb_checkpoints
 *.pkl
 .vscode
+models/
