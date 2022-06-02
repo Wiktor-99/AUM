@@ -52,6 +52,15 @@ def extract_hog_features(values):
     extracted_features = np.array([ extract_features(img) for img in values ])
     return scalify.fit_transform(extracted_features)
 
+def print_help():
+    print("Image based animal classification app")
+    print("Usage of script python3 AnimalsImageRecognitionApp.py path_to_image/s algorithm_1 [algorithm_2] [algorithm_3]")
+    print("Available ML algorithms:")
+    print(" -svm")
+    print(" -mlp")
+    print(" -knn")
+    print("App as results return print list of predicted classes")
+
 def main():
     path = create_path_to_data(sys.argv[1])
 
