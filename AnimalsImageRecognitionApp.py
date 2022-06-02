@@ -56,7 +56,11 @@ def extract_hog_features(values):
 
 def print_help():
     print("Image based animal classification app")
-    print("Usage of script python3 AnimalsImageRecognitionApp.py path_to_image/s algorithm_1 [algorithm_2] [algorithm_3]")
+    print("Usage of script:")
+    print("python3 AnimalsImageRecognitionApp.py -f path_to_image/s -a algorithm_1 [algorithm_2] [algorithm_3] [-w] [w1] [w2] [w3]")
+    print("-f file")
+    print("-a algorithms list")
+    print("-w weights for algorithms")
     print("Available ML algorithms:")
     print(" -svm")
     print(" -mlp")
