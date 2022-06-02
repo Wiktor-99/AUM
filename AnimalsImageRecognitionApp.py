@@ -1,4 +1,4 @@
-from os.path import isdir
+from os.path import isdir, isfile
 from skimage.io import imread_collection
 from skimage.transform import resize
 import numpy as np
@@ -16,8 +16,10 @@ def crate_path_to_directory(folder_name):
 def create_path_to_data(path):
     if isdir(path):
         return crate_path_to_directory(path)
+    elif isfile(path):
+        return path
 
-    return path
+    return None
 
 def load_images_from_directory(path_to_images):
     image_size = (64,64,3)
@@ -62,7 +64,13 @@ def print_help():
     print("App as results return print list of predicted classes")
 
 def main():
+    if sys.argv[1] == "-h":
+        print_help()
+        return
     path = create_path_to_data(sys.argv[1])
+    if not path:
+        print("First argument is not file or directory, for help call with -h")
+        return
 
     x = load_images_from_directory(path)
 
