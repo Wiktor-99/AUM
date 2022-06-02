@@ -83,10 +83,6 @@ class VoteClassifier(BaseEstimator, ClassifierMixin):
 
         return self.label_encoder.inverse_transform(final_result)
 
-    def raise_error_when_weights_and_classifiers_have_different_length(self):
-        if self.weights and len(self.weights) != len(self.classifiers):
-            raise ValueError(f'Liczba klasyfikatorów musi być równa liczbie wag dostępne wagi: {len(self.weights)}, klasyfikatory: {len(self.classifiers)}')
-
     def transform_labels(self, predictions):
         fitted_labels = []
         for i in range(len(self.classifiers)):
@@ -99,31 +95,71 @@ class VoteClassifier(BaseEstimator, ClassifierMixin):
          return np.argmax(np.bincount(y_value, weights=self.weights))
 
 
+def get_classifiers(models, classifiers_names):
+    classifiers = []
+    for algorithm_name in classifiers_names:
+        if algorithm_name in models:
+            classifiers.append(models[algorithm_name])
+        else:
+            print(f"{algorithm_name} algorithm is unavailable")
+            print("Pleas use on of knn, svm, mlp.")
+            return None
+
+    return classifiers
+
+def get_weights(weights_strings):
+    weights = []
+    for weight in weights_strings:
+        try:
+            weights.append(float(weight))
+        except ValueError:
+            print("One of weights is not float, will not apply any of weights")
+            return None
+
+    return weights
+
+def parse_classifiers_and_weights(models, argv):
+    if argv[3] == "-a":
+        if "-w" in argv:
+            index_of_w = argv.index("-w")
+            classifiers = get_classifiers(models, argv[4:index_of_w])
+            weights = get_weights(argv[index_of_w+1:])
+        else:
+            classifiers = get_classifiers(models, argv[4:])
+    return classifiers,weights
+
+
 def main():
     if sys.argv[1] == "-h":
         print_help()
         return
 
-    path = create_path_to_data(sys.argv[1])
-    if not path:
-        print("First argument is not file or directory, for help call with -h")
-        return
+    if sys.argv[1] == "-f":
+        path = create_path_to_data(sys.argv[2])
+        if not path:
+            print("First argument is not file or directory, for help call with -h")
+            return
 
+    classifiers = None
+    weights = None
 
     models = load_models()
+    classifiers, weights = parse_classifiers_and_weights(models, sys.argv)
 
-    if sys.argv[2] in models:
-        classifier = models[sys.argv[2]]
-    else:
-        print(f"{sys.argv[2]} algorithm is unavailable")
-        print("Pleas use on of knn, svm, mlp.")
+    if not classifiers:
         return
 
-    x = load_images_from_directory(path)
-    x = extract_hog_features(x)
+    if weights:
+        if len(weights) != len(classifiers):
+            print("weights and classifier must have same length")
+            return
 
-    pred = classifier.predict(x)
-    print('Predicted values', pred)
+    classifier = VoteClassifier(classifiers, weights)
+
+    data = extract_hog_features(load_images_from_directory(path))
+
+    prediction = classifier.predict(data)
+    print('Predicted values', prediction)
 
 if __name__ == '__main__':
     main()
