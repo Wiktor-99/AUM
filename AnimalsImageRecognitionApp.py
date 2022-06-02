@@ -42,12 +42,16 @@ def get_histogram(image, bins, channel):
 def get_all_colors_histograms(image, bins = 110):
     return np.reshape((get_histogram(image, bins, 0), get_histogram(image, bins, 1), get_histogram(image, bins, 2)), (bins*3))
 
+def get_hog_transform(image):
+    return hog(rgb2gray(image), orientations = 5, pixels_per_cell = (8,8), cells_per_block = (8,8))
+
+def extract_features(image):
+    return np.concatenate((get_hog_transform(image), get_all_colors_histograms(image)))
+
 def extract_hog_features(values):
     scalify = StandardScaler()
-    return scalify.fit_transform(
-        np.array(
-            [ np.concatenate(
-                    (hog(rgb2gray(img), orientations = 5, pixels_per_cell = (8,8), cells_per_block = (8,8)), get_all_colors_histograms(img))) for img in values ]))
+    extracted_features = np.array([ extract_features(img) for img in values ])
+    return scalify.fit_transform(extracted_features)
 
 def main():
     x, y = create_data_set(sys.argv[1])
