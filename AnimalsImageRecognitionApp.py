@@ -10,23 +10,15 @@ from skimage.color import rgb2gray, rgb2hsv
 
 
 
-def load_images(path_to_images, class_name, values, labels):
-    postfix = '/*.jp*'
+def load_images_from_directory(path_to_images):
+    postfix = '/*'
     image_size = (64,64,3)
-    for image in imread_collection(path_to_images + class_name + postfix):
+    values = []
+    for image in imread_collection(path_to_images + postfix):
         img = resize(image, image_size)
         values.append(img)
-        labels.append(class_name)
 
-
-def create_data_set(path_to_images):
-    class_names = ['spider', 'horse', 'elephant', 'chicken', 'sheep']
-    values = []
-    labels = []
-    for class_name in class_names:
-        load_images(path_to_images, class_name, values, labels)
-
-    return np.array(values), np.array(labels)
+    return np.array(values)
 
 def load_models():
     folder = "models/"
@@ -53,11 +45,11 @@ def extract_hog_features(values):
     return scalify.fit_transform(extracted_features)
 
 def main():
-    x, y = create_data_set(sys.argv[1])
+    x = load_images_from_directory(sys.argv[1])
     models = load_models()
     x = extract_hog_features(x)
     pred = models[sys.argv[2]].predict(x)
-    print('Predicted values', y)
+    print('Predicted values', pred)
 
 if __name__ == '__main__':
     main()
