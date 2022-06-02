@@ -1,14 +1,14 @@
 from os.path import isdir, isfile
 from skimage.io import imread_collection
+import sys
 from skimage.transform import resize
 import numpy as np
 from joblib import load
-import sys
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from skimage.feature import hog
 from skimage.exposure import histogram
 from skimage.color import rgb2gray, rgb2hsv
-
+from sklearn.base import BaseEstimator, ClassifierMixin
 
 def crate_path_to_directory(folder_name):
     return folder_name + '/*'
@@ -62,6 +62,42 @@ def print_help():
     print(" -mlp")
     print(" -knn")
     print("App as results return print list of predicted classes")
+
+class VoteClassifier(BaseEstimator, ClassifierMixin):
+
+    def __init__(self, classifiers, weights=None):
+        self.classifiers = classifiers
+        self.weights = weights
+        self.label_encoder = LabelEncoder()
+
+
+    def fit(self, x_train, y_train):
+        return self
+
+    def predict(self, x_test):
+        result = np.asarray([clf.predict(x_test) for clf in self.classifiers])
+
+        result = self.transform_labels(result)
+
+        final_result = np.apply_along_axis(self.get_argmax_class, axis=0, arr = result)
+
+        return self.label_encoder.inverse_transform(final_result)
+
+    def raise_error_when_weights_and_classifiers_have_different_length(self):
+        if self.weights and len(self.weights) != len(self.classifiers):
+            raise ValueError(f'Liczba klasyfikatorów musi być równa liczbie wag dostępne wagi: {len(self.weights)}, klasyfikatory: {len(self.classifiers)}')
+
+    def transform_labels(self, predictions):
+        fitted_labels = []
+        for i in range(len(self.classifiers)):
+            self.label_encoder.fit(predictions[i])
+            fitted_labels.append(self.label_encoder.transform(predictions[i]))
+
+        return fitted_labels
+
+    def get_argmax_class(self,y_value):
+         return np.argmax(np.bincount(y_value, weights=self.weights))
+
 
 def main():
     if sys.argv[1] == "-h":
