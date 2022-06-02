@@ -1,3 +1,4 @@
+from os.path import isdir
 from skimage.io import imread_collection
 from skimage.transform import resize
 import numpy as np
@@ -9,12 +10,19 @@ from skimage.exposure import histogram
 from skimage.color import rgb2gray, rgb2hsv
 
 
+def crate_path_to_directory(folder_name):
+    return folder_name + '/*'
+
+def create_path_to_data(path):
+    if isdir(path):
+        return crate_path_to_directory(path)
+
+    return path
 
 def load_images_from_directory(path_to_images):
-    postfix = '/*'
     image_size = (64,64,3)
     values = []
-    for image in imread_collection(path_to_images + postfix):
+    for image in imread_collection(path_to_images):
         img = resize(image, image_size)
         values.append(img)
 
@@ -45,9 +53,13 @@ def extract_hog_features(values):
     return scalify.fit_transform(extracted_features)
 
 def main():
-    x = load_images_from_directory(sys.argv[1])
+    path = create_path_to_data(sys.argv[1])
+
+    x = load_images_from_directory(path)
+
     models = load_models()
     x = extract_hog_features(x)
+
     pred = models[sys.argv[2]].predict(x)
     print('Predicted values', pred)
 
