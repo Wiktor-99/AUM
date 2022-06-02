@@ -67,17 +67,26 @@ def main():
     if sys.argv[1] == "-h":
         print_help()
         return
+
     path = create_path_to_data(sys.argv[1])
     if not path:
         print("First argument is not file or directory, for help call with -h")
         return
 
-    x = load_images_from_directory(path)
 
     models = load_models()
+
+    if sys.argv[2] in models:
+        classifier = models[sys.argv[2]]
+    else:
+        print(f"{sys.argv[2]} algorithm is unavailable")
+        print("Pleas use on of knn, svm, mlp.")
+        return
+
+    x = load_images_from_directory(path)
     x = extract_hog_features(x)
 
-    pred = models[sys.argv[2]].predict(x)
+    pred = classifier.predict(x)
     print('Predicted values', pred)
 
 if __name__ == '__main__':
