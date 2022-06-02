@@ -2,7 +2,6 @@ from skimage.io import imread_collection
 from skimage.transform import resize
 import numpy as np
 from joblib import load
-from sklearn.metrics import accuracy_score
 import sys
 from sklearn.preprocessing import StandardScaler
 from skimage.feature import hog
@@ -58,7 +57,7 @@ def main():
     models = load_models()
     x = extract_hog_features(x)
     pred = models[sys.argv[2]].predict(x)
-    print('Percentage correct for model: ', 100*accuracy_score(pred, y))
+    print('Predicted values', y)
 
 if __name__ == '__main__':
     main()
