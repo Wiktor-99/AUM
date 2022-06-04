@@ -130,6 +130,7 @@ def parse_classifiers_and_weights(models, argv):
             weights = get_weights(argv[index_of_w+1:])
         else:
             classifiers = get_classifiers(models, argv[4:])
+            weights = None
     return classifiers,weights
 
 def make_prediction(path, classifiers, weights):
