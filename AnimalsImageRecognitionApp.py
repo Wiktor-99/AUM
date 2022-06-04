@@ -132,23 +132,31 @@ def parse_classifiers_and_weights(models, argv):
             classifiers = get_classifiers(models, argv[4:])
     return classifiers,weights
 
+def make_prediction(path, classifiers, weights):
+    classifier = VoteClassifier(classifiers, weights)
+
+    data = extract_hog_features(load_images_from_directory(path))
+
+    prediction = classifier.predict(data)
+    print('Predicted values', prediction)
+
+def prase_input_file():
+    if sys.argv[1] == "-f":
+        return create_path_to_data(sys.argv[2])
+    return None
 
 def main():
     if sys.argv[1] == "-h":
         print_help()
         return
 
-    if sys.argv[1] == "-f":
-        path = create_path_to_data(sys.argv[2])
-        if not path:
-            print("First argument is not file or directory, for help call with -h")
-            return
+    path = prase_input_file()
 
-    classifiers = None
-    weights = None
+    if not path:
+        print("First argument is not file or directory, for help call with -h")
+        return
 
-    models = load_models()
-    classifiers, weights = parse_classifiers_and_weights(models, sys.argv)
+    classifiers, weights = parse_classifiers_and_weights(load_models(), sys.argv)
 
     if not classifiers:
         return
@@ -158,12 +166,7 @@ def main():
             print("weights and classifier must have same length")
             return
 
-    classifier = VoteClassifier(classifiers, weights)
-
-    data = extract_hog_features(load_images_from_directory(path))
-
-    prediction = classifier.predict(data)
-    print('Predicted values', prediction)
+    make_prediction(path, classifiers, weights)
 
 if __name__ == '__main__':
     main()
