@@ -4,3 +4,4 @@ raw-img
 *.pkl
 .vscode
 models/
+test_folder/
