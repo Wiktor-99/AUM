@@ -147,6 +147,11 @@ def prase_input_file():
     return None
 
 def main():
+    if len(sys.argv) < 5:
+        print("Not enough arguments")
+        print("Call -h for help")
+        return
+
     if sys.argv[1] == "-h":
         print_help()
         return
