@@ -8,7 +8,10 @@ Elementy repozytorium:
 *  Prezentacji, która została wykorzystana do podsumowania przebiegu pracy oraz wyniki projektu.
 
 ***
-## Do prawidłowego działania projektu należy rozpakować archiwum raw-img
+## Uruchomienie programu
+Do prawidłowego działania projektu należy wykonać kilka kroków:
+* rozpakować archiwum raw-img do folder raw-img
+* rozpakować archiwum models do folderu models
 
 ## Wykorzystywany zbiór danych został można znaleźć na stronie(zbiór danych został dostosowany):
 https://www.kaggle.com/datasets/alessiocorrado99/animals10
