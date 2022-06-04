@@ -32,9 +32,9 @@ def load_images_from_directory(path_to_images):
 
 def load_models():
     folder = "models/"
-    return { "svm" : load(folder + "svm.sav"),
-             "mlp" : load(folder + "mlp.sav"),
-             "knn" : load(folder + "knn.sav")  }
+    return { "svm" : load(folder + "svm.joblib"),
+             "mlp" : load(folder + "mlp.joblib"),
+             "knn" : load(folder + "knn.joblib")  }
 
 def get_histogram(image, bins, channel):
     hist, _ = histogram(rgb2hsv(image)[:, :, channel], nbins=bins)
